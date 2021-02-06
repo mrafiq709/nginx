@@ -17,3 +17,4 @@ sudo fuser -k 443/tcp
 sudo service nginx restart
 sudo service nginx status
 ```
+<a href="https://imgur.com/lvJkgZA"><img src="https://i.imgur.com/lvJkgZA.png" title="source: imgur.com" /></a><br/><br/>
