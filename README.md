@@ -1,82 +1,113 @@
-# nginx
+# nginx load-balancer
 
-Step 1 – Installing Nginx
---------------------------
 ```
-sudo apt update
-sudo apt install nginx
-```
-Step 2 – Adjusting the Firewall
--------------------------------
-```
-sudo ufw app list
-```
-```
-Output:
--------
-Available applications:
-  Nginx Full
-  Nginx HTTP
-  Nginx HTTPS
-  OpenSSH
-```
-If 'Nginx HTTP' not listed
-```
-sudo ufw allow 'Nginx HTTP'
-sudo ufw status
-```
-```
-Output:
--------
-Status: active
+sudo nano /etc/nginx/sites-available/load-balencer.conf
 
-To                         Action      From
---                         ------      ----
-OpenSSH                    ALLOW       Anywhere                  
-Nginx HTTP                 ALLOW       Anywhere                  
-OpenSSH (v6)               ALLOW       Anywhere (v6)             
-Nginx HTTP (v6)            ALLOW       Anywhere (v6)
-```
-Step 3 – Checking your Web Server
----------------------------------
-```
-systemctl status nginx
-systemctl reload nginx
-systemctl restart nginx
-```
-See error Log
---------------
-```
-sudo tail -30 /var/log/nginx/error.log
-```
-Processing php file:
---------------------
-```
-location ~ \.php$ {
-		include fastcgi_params;
-                fastcgi_intercept_errors on;
-	        fastcgi_index  index.php;
-		# With php-fpm (or other unix sockets):
-		fastcgi_pass unix:/var/run/php/php8.0-fpm.sock;
-                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+upstream backend {
+	server 127.0.0.1:81;
+	server 127.0.0.1:82;
+	server 127.0.0.1:83;
+}
+
+# This server accepts all traffic to port 80 and passes it to the upstream.
+# Notice that the upstream name and the proxy_pass need to match.
+
+server {
+	listen 80;
+
+	server_name default.test;
+	location / {
+		proxy_pass http://backend;
 	}
+}
+
+server {
+    listen 81;
+
+	root /home/rafiq/load-balancing/server1;
+
+	# Add index.php to the list if you are using PHP
+	index index.php index.html index.htm index.nginx-debian.html;
+
+	server_name server1.test;
+	location / {
+		try_files $uri $uri/ /index.php$is_args$args;
+	}
+	# pass PHP scripts to FastCGI server
+	#
+	location ~ \.php$ {
+			include fastcgi_params;
+			fastcgi_intercept_errors on;
+			fastcgi_index  index.php;
+			# With php-fpm (or other unix sockets):
+			fastcgi_pass unix:/var/run/php/php8.0-fpm.sock;
+			fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+	}
+}
+
+server {
+    listen 82;
+
+	root /home/rafiq/load-balancing/server2;
+
+	# Add index.php to the list if you are using PHP
+	index index.php index.html index.htm index.nginx-debian.html;
+
+	server_name server2.test;
+	location / {
+		try_files $uri $uri/ /index.php$is_args$args;
+	}
+	# pass PHP scripts to FastCGI server
+	#
+	location ~ \.php$ {
+			include fastcgi_params;
+			fastcgi_intercept_errors on;
+			fastcgi_index  index.php;
+			# With php-fpm (or other unix sockets):
+			fastcgi_pass unix:/var/run/php/php8.0-fpm.sock;
+			fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+	}
+
+}
+
+server {
+    listen 83;
+
+	root /home/rafiq/load-balancing/server3;
+
+	# Add index.php to the list if you are using PHP
+	index index.php index.html index.htm index.nginx-debian.html;
+
+	server_name server3.test;
+	location / {
+		try_files $uri $uri/ /index.php$is_args$args;
+	}
+	# pass PHP scripts to FastCGI server
+	#
+	location ~ \.php$ {
+			include fastcgi_params;
+			fastcgi_intercept_errors on;
+			fastcgi_index  index.php;
+			# With php-fpm (or other unix sockets):
+			fastcgi_pass unix:/var/run/php/php8.0-fpm.sock;
+			fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+	}
+}
+
 ```
 
-Error:
-<a href="https://imgur.com/DeeoTZw"><img src="https://i.imgur.com/DeeoTZw.png" title="source: imgur.com" /></a><br/><br/>
-Solution:
-```
-sudo nginx -t -c /etc/nginx/nginx.conf
-```
-output:
-> nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
->
-> nginx: configuration file /etc/nginx/nginx.conf test is successful
+create symlink with sites-enable
 
 ```
-sudo fuser -k 80/tcp
-sudo fuser -k 443/tcp
-sudo service nginx restart
-sudo service nginx status
+sudo ln -s /etc/nginx/sites-available/load-balancer.conf /etc/nginx/sites-enabled/load-balancer.conf
 ```
-<a href="https://imgur.com/lvJkgZA"><img src="https://i.imgur.com/lvJkgZA.png" title="source: imgur.com" /></a><br/><br/>
+
+Reload nginx
+
+```
+systemctl reload nginx
+```
+
+##### Refference
+
+https://docs.nginx.com/nginx/admin-guide/load-balancer/http-load-balancer/
