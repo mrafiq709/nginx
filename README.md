@@ -1,6 +1,56 @@
 # nginx
 
+Step 1 – Installing Nginx
+--------------------------
+```
+sudo apt update
+sudo apt install nginx
+```
+Step 2 – Adjusting the Firewall
+-------------------------------
+```
+sudo ufw app list
+```
+```
+Output:
+-------
+Available applications:
+  Nginx Full
+  Nginx HTTP
+  Nginx HTTPS
+  OpenSSH
+```
+If 'Nginx HTTP' not listed
+```
+sudo ufw allow 'Nginx HTTP'
+sudo ufw status
+```
+```
+Output:
+-------
+Status: active
+
+To                         Action      From
+--                         ------      ----
+OpenSSH                    ALLOW       Anywhere                  
+Nginx HTTP                 ALLOW       Anywhere                  
+OpenSSH (v6)               ALLOW       Anywhere (v6)             
+Nginx HTTP (v6)            ALLOW       Anywhere (v6)
+```
+Step 3 – Checking your Web Server
+---------------------------------
+```
+systemctl status nginx
+systemctl reload nginx
+systemctl restart nginx
+```
+See error Log
+--------------
+```
+sudo tail -30 /var/log/nginx/error.log
+```
 Processing php file:
+--------------------
 ```
 location ~ \.php$ {
 		include fastcgi_params;
