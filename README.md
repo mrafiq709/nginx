@@ -1,7 +1,7 @@
 # nginx load-balancer
 
 ```
-sudo nano /etc/nginx/sites-available/load-balencer.conf
+sudo nano /etc/nginx/sites-available/load-balancer.conf
 
 upstream backend {
 	server 127.0.0.1:81;
