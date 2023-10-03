@@ -50,6 +50,9 @@ systemctl restart nginx
 ```
 For mac
 ```
+brew services stop nginx
+brew services start nginx
+
 sudo nginx
 sudo nginx -s reload
 sudo nginx -s stop
