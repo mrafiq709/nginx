@@ -82,7 +82,7 @@ location ~ \.php$ {
 for mac /usr/local/etc/nginx/servers/connect.test
 ```
     server {
-        listen       8081;
+        listen       80;
         server_name  connect.test;
 
         root /usr/local/var/www/test;
@@ -90,6 +90,40 @@ for mac /usr/local/etc/nginx/servers/connect.test
 
         location ~ \.php$ {
             include fastcgi_params;
+            fastcgi_pass 127.0.0.1:9000;  # Match the PHP-FPM listen address
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        }
+    }
+```
+For codeigniter 3 additional seetings
+```
+    server {
+        listen       80;
+        server_name  connect.test;
+
+        root /usr/local/var/www/global-connect;
+        autoindex on;
+        index index.php;
+
+        # set expiration of assets to MAX for caching
+        location ~* \.(ico|css|js|gif|jpe?g|png)(\?[0-9]+)?$ {
+                expires max;
+                log_not_found off;
+        }
+
+        location / {
+            try_files $uri /index.php;
+        }
+
+        location /assets {
+            alias /usr/local/var/www/global-connect/assets;
+            # Add any necessary directives for access control here.
+        }
+
+        location ~ \.php$ {
+            include fastcgi_params;
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
             fastcgi_pass 127.0.0.1:9000;  # Match the PHP-FPM listen address
             fastcgi_index index.php;
             fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
