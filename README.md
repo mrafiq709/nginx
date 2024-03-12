@@ -150,6 +150,17 @@ pm.start_servers = 2
 pm.min_spare_servers = 1
 pm.max_spare_servers = 3
 ```
+If still got error like 502 Bad Gateway
+Check the error log and try changing php-fpm port here
+```
+/usr/local/etc/php/7.3/php-fpm.d/www.cnf
+listen = 127.0.0.1:9001
+```
+and also change nginx fastcgi_pass
+```
+fastcgi_pass 127.0.0.1:9001;
+```
+
 
 Error:
 <a href="https://imgur.com/DeeoTZw"><img src="https://i.imgur.com/DeeoTZw.png" title="source: imgur.com" /></a><br/><br/>
